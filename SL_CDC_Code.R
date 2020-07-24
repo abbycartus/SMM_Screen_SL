@@ -14,8 +14,8 @@ for (package in packages) {
 setwd("\\\\136.142.117.70\\Studies$\\Bodnar Abby\\Severe Maternal Morbidity\\Data")
 
 # Read data
-D <- readRDS("baked_train_momi_20200615.rds")
-D_splines <- readRDS("baked_train_momi_withsplines.rds")
+D <- readRDS("baked_train_momi_20200724.rds")
+D_splines <- readRDS("baked_train_momi_splines_20200724.rds")
 
 # Specify the number of folds for V-fold cross-validation
 folds=10
@@ -53,55 +53,55 @@ m15 <- lapply(1:folds, function(ii) glm(ch_smmtrue~., data=do.call(rbind,splt[-i
 m16 <- lapply(1:folds,function(ii) gam(ch_smmtrue~., family="binomial",data=rbindlist(splt_splines[-ii])))
 
 #xgboost
-m17 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=200, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m18 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=200, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m19 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=200, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m20 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=500, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m21 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=500, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m22 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=500, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m23 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=1000, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m24 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=1000, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m25 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=1000, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m26 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=200, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m27 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=200, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m28 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=200, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m29 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=500, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m30 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=500, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m31 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=500, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m32 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=1000, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m33 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=1000, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m34 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=1000, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m35 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=200, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m36 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=200, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m37 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=200, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m38 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=500, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m39 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=500, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m40 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=500, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m41 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 4, ntrees=1000, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m42 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 5, ntrees=1000, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
-m43 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-11]),label = as.matrix(do.call(rbind,splt[-ii])[,11]), max_depth = 6, ntrees=1000, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m17 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=200, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m18 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=200, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m19 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=200, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m20 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=500, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m21 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=500, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m22 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=500, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m23 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=1000, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m24 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=1000, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m25 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=1000, shrinkage=0.01, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m26 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=200, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m27 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=200, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m28 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=200, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m29 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=500, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m30 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=500, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m31 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=500, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m32 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=1000, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m33 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=1000, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m34 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=1000, shrinkage=0.001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m35 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=200, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m36 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=200, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m37 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=200, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m38 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=500, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m39 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=500, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m40 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=500, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m41 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 4, ntrees=1000, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m42 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 5, ntrees=1000, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
+m43 <- lapply(1:folds, function(ii) xgboost(data = as.matrix(do.call(rbind,splt[-ii])[,-1]),label = as.matrix(do.call(rbind,splt[-ii])[,1]), max_depth = 6, ntrees=1000, shrinkage=0.0001, nrounds = 15, objective = "binary:logistic", verbose = 0))
 
 #glmnet - also vary lambdas? 
 #cv.glmnet will find the optimal lambda for you... can you incorporate cross-validation of lambda into CV we're already doing 
-m44 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-11]), as.matrix(do.call(rbind,splt[-ii])[,11]), alpha = 0, family="binomial"))
-m45 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-11]), as.matrix(do.call(rbind,splt[-ii])[,11]), alpha = 0.2, family="binomial"))
-m46 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-11]), as.matrix(do.call(rbind,splt[-ii])[,11]), alpha = 0.4, family="binomial"))
-m47 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-11]), as.matrix(do.call(rbind,splt[-ii])[,11]), alpha = 0.6, family="binomial"))
-m48 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-11]), as.matrix(do.call(rbind,splt[-ii])[,11]), alpha = 0.8, family="binomial"))
-m49 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-11]), as.matrix(do.call(rbind,splt[-ii])[,11]), alpha = 1.0, family="binomial"))
+m44 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-1]), as.matrix(do.call(rbind,splt[-ii])[,1]), alpha = 0, family="binomial"))
+m45 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-1]), as.matrix(do.call(rbind,splt[-ii])[,1]), alpha = 0.2, family="binomial"))
+m46 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-1]), as.matrix(do.call(rbind,splt[-ii])[,1]), alpha = 0.4, family="binomial"))
+m47 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-1]), as.matrix(do.call(rbind,splt[-ii])[,1]), alpha = 0.6, family="binomial"))
+m48 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-1]), as.matrix(do.call(rbind,splt[-ii])[,1]), alpha = 0.8, family="binomial"))
+m49 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-1]), as.matrix(do.call(rbind,splt[-ii])[,1]), alpha = 1.0, family="binomial"))
 
 # k-neaest neighbors: build prediction into model statement with TEST_data; yields a list of predicted probabilities directly 
-p50 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-11],y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,11]))),
-                                              TEST_data = do.call(rbind,splt[ii])[,-11], regression=T, k=2))
+p50 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-1],y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,1]))),
+                                              TEST_data = do.call(rbind,splt[ii])[,-1], regression=T, k=2))
 
-p51 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-11], y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,11]))),
-                                              TEST_data = do.call(rbind,splt[ii])[,-11],regression=T, k=3))
+p51 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-1], y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,1]))),
+                                              TEST_data = do.call(rbind,splt[ii])[,-1],regression=T, k=3))
 
-p52 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-11], y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,11]))),
-                                              TEST_data = do.call(rbind,splt[ii])[,-11],regression=T, k=4))
+p52 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-1], y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,1]))),
+                                              TEST_data = do.call(rbind,splt[ii])[,-1],regression=T, k=4))
 
-p53 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-11], y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,11]))),
-                                              TEST_data = do.call(rbind,splt[ii])[,-11], regression=T, k=5))
+p53 <- lapply(1:folds, function(ii) KernelKnn(data=do.call(rbind,splt[-ii])[,-1], y=as.numeric(as.character(unlist(do.call(rbind,splt[-ii])[,1]))),
+                                              TEST_data = do.call(rbind,splt[ii])[,-1], regression=T, k=5))
  
 
 #CDC algorithm: just classify as 0 or 1 on the basis of the SMM screening criteria. Need to double check that the numbers you get here match the screening var.
@@ -143,41 +143,41 @@ p15 <- lapply(1:folds, function(ii) predict(m15[[ii]], newdata = rbindlist(splt[
 p16 <- lapply(1:folds, function(ii) predict(m16[[ii]], newdata=rbindlist(splt_splines[ii]), type="response"))
 
 ########## XGBOOST ########## 
-p17 <- lapply(1:folds, function(ii) predict(m17[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p18 <- lapply(1:folds, function(ii) predict(m18[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p19 <- lapply(1:folds, function(ii) predict(m19[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p20 <- lapply(1:folds, function(ii) predict(m20[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p21 <- lapply(1:folds, function(ii) predict(m21[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p22 <- lapply(1:folds, function(ii) predict(m22[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p23 <- lapply(1:folds, function(ii) predict(m23[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p24 <- lapply(1:folds, function(ii) predict(m24[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p25 <- lapply(1:folds, function(ii) predict(m25[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p26 <- lapply(1:folds, function(ii) predict(m26[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p27 <- lapply(1:folds, function(ii) predict(m27[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p28 <- lapply(1:folds, function(ii) predict(m28[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p29 <- lapply(1:folds, function(ii) predict(m29[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p30 <- lapply(1:folds, function(ii) predict(m30[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p31 <- lapply(1:folds, function(ii) predict(m31[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p32 <- lapply(1:folds, function(ii) predict(m32[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p33 <- lapply(1:folds, function(ii) predict(m33[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p34 <- lapply(1:folds, function(ii) predict(m34[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p35 <- lapply(1:folds, function(ii) predict(m35[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p36 <- lapply(1:folds, function(ii) predict(m36[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p37 <- lapply(1:folds, function(ii) predict(m37[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p38 <- lapply(1:folds, function(ii) predict(m38[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p39 <- lapply(1:folds, function(ii) predict(m39[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p40 <- lapply(1:folds, function(ii) predict(m40[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p41 <- lapply(1:folds, function(ii) predict(m41[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p42 <- lapply(1:folds, function(ii) predict(m42[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
-p43 <- lapply(1:folds, function(ii) predict(m43[[ii]], as.matrix(rbindlist(splt[ii])[,-11]))) 
+p17 <- lapply(1:folds, function(ii) predict(m17[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p18 <- lapply(1:folds, function(ii) predict(m18[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p19 <- lapply(1:folds, function(ii) predict(m19[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p20 <- lapply(1:folds, function(ii) predict(m20[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p21 <- lapply(1:folds, function(ii) predict(m21[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p22 <- lapply(1:folds, function(ii) predict(m22[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p23 <- lapply(1:folds, function(ii) predict(m23[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p24 <- lapply(1:folds, function(ii) predict(m24[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p25 <- lapply(1:folds, function(ii) predict(m25[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p26 <- lapply(1:folds, function(ii) predict(m26[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p27 <- lapply(1:folds, function(ii) predict(m27[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p28 <- lapply(1:folds, function(ii) predict(m28[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p29 <- lapply(1:folds, function(ii) predict(m29[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p30 <- lapply(1:folds, function(ii) predict(m30[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p31 <- lapply(1:folds, function(ii) predict(m31[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p32 <- lapply(1:folds, function(ii) predict(m32[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p33 <- lapply(1:folds, function(ii) predict(m33[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p34 <- lapply(1:folds, function(ii) predict(m34[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p35 <- lapply(1:folds, function(ii) predict(m35[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p36 <- lapply(1:folds, function(ii) predict(m36[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p37 <- lapply(1:folds, function(ii) predict(m37[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p38 <- lapply(1:folds, function(ii) predict(m38[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p39 <- lapply(1:folds, function(ii) predict(m39[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p40 <- lapply(1:folds, function(ii) predict(m40[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p41 <- lapply(1:folds, function(ii) predict(m41[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p42 <- lapply(1:folds, function(ii) predict(m42[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
+p43 <- lapply(1:folds, function(ii) predict(m43[[ii]], as.matrix(rbindlist(splt[ii])[,-1]))) 
 
 ########## GLMNET ########## 
-p44 <- lapply(1:folds, function(ii) predict(m44[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-11]), s="lambda.min", type="response"))
-p45 <- lapply(1:folds, function(ii) predict(m45[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-11]), s="lambda.min", type="response"))
-p46 <- lapply(1:folds, function(ii) predict(m46[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-11]), s="lambda.min", type="response"))
-p47 <- lapply(1:folds, function(ii) predict(m47[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-11]), s="lambda.min", type="response"))
-p48 <- lapply(1:folds, function(ii) predict(m48[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-11]), s="lambda.min", type="response"))
-p49 <- lapply(1:folds, function(ii) predict(m49[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-11]), s="lambda.min", type="response"))
+p44 <- lapply(1:folds, function(ii) predict(m44[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-1]), s="lambda.min", type="response"))
+p45 <- lapply(1:folds, function(ii) predict(m45[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-1]), s="lambda.min", type="response"))
+p46 <- lapply(1:folds, function(ii) predict(m46[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-1]), s="lambda.min", type="response"))
+p47 <- lapply(1:folds, function(ii) predict(m47[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-1]), s="lambda.min", type="response"))
+p48 <- lapply(1:folds, function(ii) predict(m48[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-1]), s="lambda.min", type="response"))
+p49 <- lapply(1:folds, function(ii) predict(m49[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-1]), s="lambda.min", type="response"))
 #you're seeing predictions for different values of lambda. we're supposed to pick an optimal value of lambda. typically picked with cross-validation.
 
 ########## KNN: PREDICTED PROBABILITIES ARE ALREADY IN P50-P53 ########## 
@@ -188,7 +188,7 @@ p49 <- lapply(1:folds, function(ii) predict(m49[[ii]], newx = as.matrix(rbindlis
 # update dataframe 'splt' so that column1 is the observed outcome (y) and subsequent columns contain predictions above
 
 for(i in 1:folds){
-  splt[[i]]<-cbind(splt[[i]][,11],
+  splt[[i]]<-cbind(splt[[i]][,1],
                    p1[[i]], #bayesglm
                    p2[[i]]$predictions, p3[[i]]$predictions, p4[[i]]$predictions, p5[[i]]$predictions, p6[[i]]$predictions, p7[[i]]$predictions, p8[[i]]$predictions,
                     p9[[i]]$predictions, p10[[i]]$predictions, p11[[i]]$predictions, p12[[i]]$predictions, p13[[i]]$predictions, #ranger
@@ -320,7 +320,7 @@ a<-rbind(cbind("bayesglm",mean(do.call(rbind, risk2),na.rm=T)),
 # output a table of the CV-risk estimates
 # xtable(a)
 # this is one part of "SuperLearner" output. How do we get 95% CI's around these so we can plot them nicely?
-saveRDS(a, "risks_momi.rds")
+saveRDS(a, "risks_momi_20200724.rds")
 
 #----------------------------
 ## 4: estimate SL weights using the optim() function to minimize (1-AUC)
@@ -362,13 +362,25 @@ cvRisk <- 1-auc_obj
 ########################################################################################################################################################### 
 
 
-init <- rep(1/ncol(A), ncol(A))
+init <- rep(1/54, 54)
 fit <- optim(par=init, fn=SL.r, A=X[,2:55], y=X[,1], 
              method="L-BFGS-B",lower=bounds[1],upper=bounds[2])
 fit
 
 alpha<-fit$par/sum(fit$par)
+options(scipen=999)
 alpha
+sum(alpha)
+
+alpha <- data.frame(alpha)
+rownames(alpha) <- c("bayesglm","ranger1","ranger2","ranger3","ranger4","ranger5","ranger6","ranger7","ranger8",
+                "ranger9","ranger10","ranger11","ranger12","mean","glm","gams","xgboost1","xgboost2","xgboost3",
+                "xgboost4","xgboost5","xgboost6","xgboost7","xgboost8","xgboost9","xgboost10","xgboost11","xgboost12",
+                "xgboost13","xgboost14","xgboost15","xgboost16","xgboost17","xgboost18","xgboost19","xgboost20","xgboost21",
+                "xgboost22","xgboost23","xgboost24","xgboost25","xgboost26","xgboost27","glmnet1","glmnet2","glmnet3",
+                "glmnet4","glmnet5","glmnet6","knn1","knn2","knn3","knn4","cdc")
+
+write.csv(alpha, file="C:\\Users\\abc72\\Box Sync\\Dissertation backup\\Dissertation\\MOMI\\Exploratory data analysis\\alpha_test_novarselection_2020.07.24.csv")
 
 #---------------------
 ## 5a: fit all algorithms to NEW data
