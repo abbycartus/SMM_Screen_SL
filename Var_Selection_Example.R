@@ -65,7 +65,7 @@ sl.lib <- list("SL.mean", "SL.glmnet")
 SLfitY<-SuperLearner(Y=y,X=x,family="binomial",
                    method="method.AUC",
                    SL.library=sl.lib,
-                   cvControl=list(V=folds))
+                   cvControl=list(V=folds, validRows=index))
 SLfitY
 
 # WITH SCREENING
@@ -73,7 +73,7 @@ sl.lib <- list("SL.mean", "SL.glmnet", c("SL.glmnet", "screen.corRank"))
 SLfitY_scr<-SuperLearner(Y=y,X=x,family="binomial",
                        method="method.AUC",
                        SL.library=sl.lib,
-                       cvControl=list(V=folds))
+                       cvControl=list(V=folds, validRows=index))
 SLfitY_scr
 SLfitY_scr$whichScreen
 
@@ -88,7 +88,7 @@ SLfitY_scr$whichScreen
 # Hand-coding Super Learner -----------------------------------------------------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------
 ###########  Fitting individual algorithms on the training set (but not the ii-th validation set) ########### 
-m1 <- lapply(1:folds,function(ii) mean(rbindlist(splt[-ii])$y)) #mean
+m1 <- lapply(1:folds,function(ii)weighted.mean(rbindlist(splt[-ii])$y)) #mean - SL function uses weighted.mean
 m2 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-6]), 
                                              as.matrix(do.call(rbind,splt[-ii])[,6]), alpha = 1, family="binomial")) #glmnet
 #glmnet with screen.corRank
