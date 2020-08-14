@@ -90,11 +90,11 @@ SLfitY_scr$whichScreen
 ###########  Fitting individual algorithms on the training set (but not the ii-th validation set) ########### 
 m1 <- lapply(1:folds,function(ii)weighted.mean(rbindlist(splt[-ii])$y)) #mean - SL function uses weighted.mean
 m2 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-6]), 
-                                             as.matrix(do.call(rbind,splt[-ii])[,6]), alpha = 1, family="binomial")) #glmnet
+                                             as.matrix(do.call(rbind,splt[-ii])[,6]), nfolds=10, family="binomial", alpha=1)) #glmnet
 #glmnet with screen.corRank
 # subset first to remove the outcome variable (position 6), then to select just those variables with TRUE in whichVariable
 m3 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-6][,whichVariable]),
-                                             as.matrix(do.call(rbind,splt[-ii])[,6]), alpha = 1, family="binomial"))
+                                             as.matrix(do.call(rbind,splt[-ii])[,6]), nfolds=10, family="binomial", alpha=1))
 
 
 ########### Predict ########### 
@@ -147,80 +147,4 @@ alpha
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-#-----------------------------------------------------------------------------------------------------------------------------------------------
-#CHECKING PREDICTIONS GOING INTO METALEARNER ---------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------------------------------
-# From SuperLearner
-head(SLfitY_scr$Z)
-head(X)
-# So the predictions are different, why is this? 
-SLpredict <- cbind(D$y, SLfitY_scr$Z)
-head(SLpredict)
-
-#SuperLearner source code for screen.corP
-screen.corP <- function(Y, X, family, obsWeights, id, method = 'pearson',
-                        minPvalue = 0.1, minscreen = 2)
-{
-  listp <- apply(X, 2, function(x, Y, method) {
-    ifelse(var(x) <= 0, 1, cor.test(x, y=Y, method = method)$p.value)
-  },
-  Y = Y, method = method)
-  whichVariable <- (listp<= minPvalue)
-  if(sum(whichVariable)<minscreen){
-    warning('number of variables with p value less than minPvalue is less than minscreen')
-    whichVariable[rank(listp)<=minscreen] <- TRUE
-  }
-  return(whichVariable)
-}
-
-screen.corP(Y=D$y, X=D[,-6])
-
-screen.corRank <- function (Y, X, family, method = "pearson", rank = 2, ...) 
-{
-  listp <- apply(X, 2, function(x, Y, method) {
-    ifelse(var(x) <= 0, 1, cor.test(x, y = Y, method = method)$p.value)
-  }, Y = Y, method = method)
-  whichVariable <- (rank(listp) <= rank)
-  return(whichVariable)
-}
-
-
-
-
-#SuperLearner source code for screen.corRank
-screen.corRank <- function(Y,X,family, method='pearson', rank=2){
-  listp <- apply(X,2,function(x,Y,method){
-    ifelse(var(x) <= 0, 1, cor.test(x,y=Y, method = method)$p.value)
-  }, Y=Y, method=method)
-  whichVariable <- (rank(listp)<= rank)
-  return(whichVariable)
-}
-corRank <- screen.corRank(Y=D$y, X=D[,-6])
-
-
-#SuperLearner source code for screen.randomForest
-screen.randomForest <- function(Y, X, family, nVar = 10, ntree = 1000, 
-                                mtry = ifelse(family$family == "gaussian", floor(sqrt(ncol(X))),
-                                              max(floor(ncol(X)/3), 1)),
-                                nodesize = ifelse(family$family == "gaussian",5,1), maxnodes = NULL){
-  .SL.require('randomForest')
-  if(family$family == "gaussian"){
-    rank.rf.fit <- randomForest::randomForest(Y~., data = X, ntree = ntree, mtry = mtry, 
-                                              nodesize = nodesize, keep.forest = FALSE,
-                                              maxnodes = maxnodes)
-  }
-  if(family$family == "binomial"){
-    rank.rf.fit <- randomForest::randomForest(as.factor(Y)~., data = X,
-                                              ntree = ntree, mtry = mtry,
-                                              nodesize = nodesize, keep.forest = FALSE,
-                                              maxnodes = maxnodes)
-  }
-  whichVariable <- (rank(-rank.rf.fit$imporance)<=nVar)
-  return(whichVariable)
-}
-screen.randomForest(Y=D$y, X=D[,-6])
-
 
