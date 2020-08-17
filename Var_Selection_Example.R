@@ -61,24 +61,28 @@ head(splt[[2]])
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # NO SCREENING
-sl.lib <- list("SL.mean", "SL.glmnet")
+set.seed(123)
+SL.glmnet_new <- create.Learner("SL.glmnet",params=list(nfolds=200))
+
+sl.lib <- list("SL.mean", SL.glmnet_new$names)
 SLfitY<-SuperLearner(Y=y,X=x,family="binomial",
-                   method="method.AUC",
-                   SL.library=sl.lib,
-                   cvControl=list(V=folds, validRows=index))
+                     method="method.AUC",
+                     SL.library=sl.lib,
+                     cvControl=list(V=folds, validRows=index))
 SLfitY
 
+SLfitY$Z[,2]
+
 # WITH SCREENING
-sl.lib <- list("SL.mean", "SL.glmnet", c("SL.glmnet", "screen.corRank"))
+set.seed(123)
+sl.lib <- list("SL.mean", SL.glmnet_new$names, c(SL.glmnet_new$names, "screen.corRank"))
 SLfitY_scr<-SuperLearner(Y=y,X=x,family="binomial",
-                       method="method.AUC",
-                       SL.library=sl.lib,
-                       cvControl=list(V=folds, validRows=index))
+                         method="method.AUC",
+                         SL.library=sl.lib,
+                         cvControl=list(V=folds, validRows=index))
 SLfitY_scr
 SLfitY_scr$whichScreen
-
-#this is picking the same variables as the screening function done by hand 
-
+SLfitY_scr$Z[,2]
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,19 +92,35 @@ SLfitY_scr$whichScreen
 # Hand-coding Super Learner -----------------------------------------------------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------
 ###########  Fitting individual algorithms on the training set (but not the ii-th validation set) ########### 
-m1 <- lapply(1:folds,function(ii)weighted.mean(rbindlist(splt[-ii])$y)) #mean - SL function uses weighted.mean
-m2 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-6]), 
-                                             as.matrix(do.call(rbind,splt[-ii])[,6]), nfolds=10, family="binomial", alpha=1)) #glmnet
+## For cv.glmnet, had to change to leave-one-out cross-validation. nfolds = 200 because there are 200 observations in each fold in splt. 
+m1 <- lapply(1:folds,function(ii) weighted.mean(rbindlist(splt[-ii])$y)) #mean - SL function uses weighted.mean
+set.seed(123)
+m2 <- lapply(1:folds, function(ii) cv.glmnet(model.matrix(~-1 + ., do.call(rbind,splt[-ii])[,-6]), 
+                                             do.call(rbind,splt[-ii])[,6], lambda=NULL, 
+                                             nlambda = 100, type.measure="deviance", nfolds=200, family="binomial", alpha=1)) #glmnet
 #glmnet with screen.corRank
 # subset first to remove the outcome variable (position 6), then to select just those variables with TRUE in whichVariable
-m3 <- lapply(1:folds, function(ii) cv.glmnet(as.matrix(do.call(rbind,splt[-ii])[,-6][,whichVariable]),
-                                             as.matrix(do.call(rbind,splt[-ii])[,6]), nfolds=10, family="binomial", alpha=1))
+set.seed(123)
+m3 <- lapply(1:folds, function(ii) cv.glmnet(model.matrix(~-1+., do.call(rbind,splt[-ii])[,-6][,whichVariable]),
+                                             do.call(rbind,splt[-ii])[,6], lambda=NULL,
+                                             nlambda = 100, type.measure = "deviance", nfolds=200, family="binomial", alpha=1))
 
 
 ########### Predict ########### 
 p1 <- lapply(1:folds, function(ii) rep(m1[[ii]], nrow(splt[[ii]])))
-p2 <- lapply(1:folds, function(ii) predict(m2[[ii]], newx = as.matrix(rbindlist(splt[ii])[,-6]), s="lambda.min", type="response"))
-p3 <- lapply(1:folds, function(ii) predict(m3[[ii]], newx = as.matrix(do.call(rbind,splt[ii])[,-6][,whichVariable]), s="lambda.min", type="response"))
+set.seed(123)
+p2 <- lapply(1:folds, function(ii) predict(m2[[ii]], newx = model.matrix(~-1 + ., do.call(rbind,splt[ii])[,-6]), s="lambda.min", type="response"))
+# Checking that the predictions are the same as from the SL function
+cbind(sort(SLfitY$Z[,2]),sort(as.numeric(do.call(rbind,p2))),round(sort(SLfitY$Z[,2])-sort(as.numeric(do.call(rbind,p2))),4))
+head(sort(SLfitY$Z[,2]))
+head(sort(as.numeric(do.call(rbind,p2))))
+
+set.seed(123)
+p3 <- lapply(1:folds, function(ii) predict(m3[[ii]], newx = model.matrix(~-1 + ., do.call(rbind,splt[ii])[,-6][,whichVariable]), s="lambda.min", type="response"))
+#Checking that predictions match SL function with variable selection 
+cbind(sort(SLfitY_scr$Z[,2]),sort(as.numeric(do.call(rbind,p3))),round(sort(SLfitY_scr$Z[,2])-sort(as.numeric(do.call(rbind,p3))),4))
+head(sort(SLfitY_scr$Z[,2]))
+head(sort(as.numeric(do.call(rbind,p3))))
 
 ############  update dataframe 'splt' so that column1 is the observed outcome (y) and subsequent columns contain predictions above ########### 
 for(i in 1:folds){
@@ -139,12 +159,11 @@ fit
 alpha<-fit$par/sum(fit$par)
 alpha
 
-
-# Coefficients do NOT agree between SuperLearner and hand-coded
+# Compare 
 SLfitY_scr
 alpha
+a
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------
-
