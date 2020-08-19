@@ -101,7 +101,7 @@ m2 <- lapply(1:folds, function(ii) cv.glmnet(model.matrix(~-1 + ., do.call(rbind
 #glmnet with screen.corRank
 # subset first to remove the outcome variable (position 6), then to select just those variables with TRUE in whichVariable
 set.seed(123)
-m3 <- lapply(1:folds, function(ii) cv.glmnet(model.matrix(~-1+., do.call(rbind,splt[-ii])[,-6][,whichVariable]),
+m3 <- lapply(1:folds, function(ii) cv.glmnet(model.matrix(~-1 + ., do.call(rbind,splt[-ii])[,-6][,whichVariable]),
                                              do.call(rbind,splt[-ii])[,6], lambda=NULL,
                                              nlambda = 100, type.measure = "deviance", nfolds=200, family="binomial", alpha=1))
 
